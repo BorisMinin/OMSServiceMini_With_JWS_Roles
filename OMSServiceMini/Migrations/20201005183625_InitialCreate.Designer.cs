@@ -9,7 +9,7 @@ using OMSServiceMini.Services.Data;
 namespace OMSServiceMini.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20201005175817_InitialCreate")]
+    [Migration("20201005183625_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

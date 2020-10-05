@@ -21,7 +21,7 @@ namespace OMSServiceMini.Services.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(@"Data Sourse=Data/IdentityDB.db");
+            optionsBuilder.UseSqlite(@"Data Source=Data/IdentityDB.db");
         }
         //migration:
         //Add-Migration IdentityContextMininBorisMigrationTry -Context IdentityContext -OutputDir Migrations\SqliteMigrations
