@@ -16,5 +16,7 @@ namespace OMSServiceMini.Services.Authenticatinon
         {
             base.OnModelCreating(builder);
         }
+        //migration:
+        //Add-Migration IdentityContextMininBorisMigrationTry -Context IdentityContext -OutputDir Migrations\SqliteMigrations
     }
 }
