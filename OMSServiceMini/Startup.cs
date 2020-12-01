@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using OMSServiceMini.Data;
+using OMSServiceMini.Services.Authentication;
 
 namespace OMSServiceMini
 {
@@ -107,38 +108,30 @@ namespace OMSServiceMini
         {
             services.AddControllers();
 
-            #region For Entity Framework  
+            //EF
             string sql_connection = Configuration.GetConnectionString("SQLDatabase");
-
-            services.AddDbContext<NorthwindContext>(options =>
-            options.UseSqlServer(sql_connection));
+            services.AddDbContext<NorthwindContext>(o => o.UseSqlServer(sql_connection));
 
             string sqlite_connection = Configuration.GetConnectionString("SQLiteDataBase");
+            services.AddDbContext<IdentityContext>(o => o.UseSqlite(sqlite_connection));
 
-            //services.AddDbContext<IdentityContext>(options =>
-            //   options.UseSqlite(sqlite_connection));
-            #endregion
-
-            #region For Identity  
-
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<IdentityContext>()
-            //   .AddDefaultTokenProviders();
+            //Identity  
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
 
             // Adding Authentication  
-            services.AddAuthentication(options =>
+            services.AddAuthentication(o =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
 
             // Adding Jwt Bearer  
-            .AddJwtBearer(options =>
+            .AddJwtBearer(o =>
             {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
+                o.SaveToken = true;
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -147,7 +140,6 @@ namespace OMSServiceMini
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
-            #endregion
 
             // Register the Swagger services
             services.AddSwaggerDocument();
