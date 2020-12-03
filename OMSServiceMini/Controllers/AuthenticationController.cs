@@ -70,7 +70,7 @@ namespace OMSServiceMini.Controllers
         }
 
 
-        // POST api/authentication/register
+        // POST api/authentication/register_user
         [HttpPost]
         [Route("register_user")]
         public async Task<IActionResult> Register_User([FromBody] RegisterModel registerModel)
@@ -97,10 +97,11 @@ namespace OMSServiceMini.Controllers
             #region Понадобится для добавления новых ролей в базу, каждый раз проверять существует ли эта роль не нужно
             //if (!await roleManager.RoleExistsAsync(UserRoles.RoleAdmin)) // Получает флаг, указывающий, существует ли указанное имя роли
             //    await roleManager.CreateAsync(new IdentityRole(UserRoles.RoleAdmin)); //Создает указанную роль в постоянном хранилище
-            //if (!await roleManager.RoleExistsAsync(UserRoles.RoleUser))
-            //    await roleManager.CreateAsync(new IdentityRole(UserRoles.RoleUser));
-            //if (!await roleManager.RoleExistsAsync(UserRoles.RoleGuest))
-            //    await roleManager.CreateAsync(new IdentityRole(UserRoles.RoleGuest));
+            //if (!await roleManager.RoleExistsAsync(UserRoles.RoleUser)) // Получает флаг, указывающий, существует ли указанное имя роли
+            //    await roleManager.CreateAsync(new IdentityRole(UserRoles.RoleUser)); //Создает указанную роль в постоянном хранилище
+
+            //if (!await roleManager.RoleExistsAsync(UserRoles.RoleGuest)) // Получает флаг, указывающий, существует ли указанное имя роли
+            //    await roleManager.CreateAsync(new IdentityRole(UserRoles.RoleGuest)); //Создает указанную роль в постоянном хранилище
             #endregion
 
             if (await roleManager.RoleExistsAsync(UserRoles.RoleUser))
@@ -113,5 +114,46 @@ namespace OMSServiceMini.Controllers
 
         #endregion
 
+
+        #region Login
+        //POST api/authentication/login
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+        {
+            var user = await userManager.FindByNameAsync(loginModel.Username);
+            if (user != null && await userManager.CheckPasswordAsync(user, loginModel.Password))
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+
+                var authClaims = new List<Claim>
+                { 
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
+
+                var token = new JwtSecurityToken(
+                    issuer: configuration["JWT:ValidIssuer"],
+                    audience: configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(10),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token)
+                });
+            }
+            return Unauthorized();
+        }
+        #endregion
     }
 }

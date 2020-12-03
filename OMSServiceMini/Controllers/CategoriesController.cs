@@ -12,7 +12,7 @@ using OMSServiceMini.Models;
 namespace OMSServiceMini.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class CategoriesController : ControllerBase
     {

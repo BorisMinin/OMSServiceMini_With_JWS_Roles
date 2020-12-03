@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMSServiceMini.Data;
 using OMSServiceMini.Models;
+using OMSServiceMini.Services.Authentication;
 
 namespace OMSServiceMini.Controllers
 {
+    //[Authorize(Roles = UserRoles.RoleAdmin)]
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProductsController : ControllerBase
     {
