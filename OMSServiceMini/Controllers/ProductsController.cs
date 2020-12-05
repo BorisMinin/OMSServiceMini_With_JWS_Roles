@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMSServiceMini.Data;
 using OMSServiceMini.Models;
-using OMSServiceMini.Services.Authentication;
 
 namespace OMSServiceMini.Controllers
 {

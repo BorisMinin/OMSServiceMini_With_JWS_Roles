@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using OMSServiceMini.Data;
-using OMSServiceMini.Services.Authentication;
 
 namespace OMSServiceMini
 {
@@ -112,11 +111,6 @@ namespace OMSServiceMini
             string sql_connection = Configuration.GetConnectionString("SQLDatabase");
             services.AddDbContext<NorthwindContext>(o => o.UseSqlServer(sql_connection));
 
-            string sqlite_connection = Configuration.GetConnectionString("SQLiteDataBase");
-            services.AddDbContext<IdentityContext>(o => o.UseSqlite(sqlite_connection));
-
-            //Identity  
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
 
             // Adding Authentication  
             services.AddAuthentication(o =>
