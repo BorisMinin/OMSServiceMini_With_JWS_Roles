@@ -115,8 +115,18 @@ namespace OMSServiceMini
             string sqliteConection = Configuration.GetConnectionString("SQLiteDataBase");
             services.AddDbContext<IdentityContext>(o => o.UseSqlite(sqliteConection));
             //Identity
-            services.AddIdentity<ApplicationIdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
+            //services.AddIdentity<ApplicationIdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
 
+            //пробую изменить полику паролей
+            services.AddIdentity<ApplicationIdentityUser, IdentityRole>(o =>
+            {
+                o.Password.RequireDigit = false; // не получает флаг о наличии цифр в пароле
+                o.Password.RequiredLength = 1; // минимальная длина пароля 
+                o.Password.RequireNonAlphanumeric = false; // небуквенно-цифровые символы
+                o.Password.RequireUppercase = false; // верхний регистр (заглавные буквы)
+                o.Password.RequireLowercase = false; // нижний регистр (прописные буквы)
+            }).AddEntityFrameworkStores<IdentityContext>().AddDefaultTokenProviders();
+            //конец попытки
 
             // Adding Authentication  
             services.AddAuthentication(o =>
